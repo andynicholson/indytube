@@ -1,0 +1,69 @@
+What is IndyTube?
+-----------------
+
+This is a very basic script for reencoding arbitrary video files to
+flash video (flv), and then including this video in the browser with a
+flash video player.  The exact same approach can be used to embed a
+cortado java player that can play ogg theora files, but the files here
+don't do that yet.  The overriding design goal is to make it
+absolutely trivial for the largest number of users to view video
+content, while still making the original files available for download,
+and not compromising privacy and anonymity of uploaders and viewers by
+relying on a commercial service like YouTube or Google Video.
+
+Design: Why not build this into the cms?
+--------------------------------
+
+Video transcoding, even on good hardware, is a time-intensive task.
+So any CMS that wanted to support embedded video would probably need
+to run the encoding job in an asynchronous process anyway.  On systems
+that do support asynchronous production processes, like Mir, you
+probably wouldn't want to put big encoding jobs into the queue anyway,
+because no one wants to wait 20 minutes for a video to finish encoding
+when they need to update the startpage.  Running the video encoding in
+a separate process also allows the encoding process to get "nice'd" 
+to an appropriate priority so it doesn't bring down your server.  
+It also means that it is very easy to graft support for embedded 
+video onto any existing cms that stores video in the file system.
+
+This script uses Twisted networking framework, to run every 60 seconds
+or whatever you like, and scan a directory files for new videos to 
+encode.
+
+What do I need to run this?
+--------------------------- 
+
+* Python 2.5 or higher
+
+* Flowplayer, available from http://flowplayer.sourceforge.net
+
+	This provides a nice embedded flash video player, you should
+	download a copy and put a copy on your web site.
+
+    Tested with Flowplayer 2.2.4, and earlier.
+
+* Mencoder, the Mplayer video encoder/decoder swiss army knife.  
+
+	This is better than ffmpeg because it is designed to handle
+	any proprietary cruft that your users throw at it.
+	Get it from www.mplayerhq.hu, or, for debian packages, from
+	www.debian-multimedia.org
+
+* FLVTool2, http://inlet-media.de/flvtool2
+	
+	You need to be able to write some metadata to the file so
+	users can seek during playback.  This ruby program does the
+	trick (make sure you've got ruby installed!)
+
+* Cheetah template library for Python.
+	
+	You can get this from http://www.cheetahtemplate.org/, or just
+	'apt-get install python-cheetah'
+
+* Twisted networking - 
+	You can get this from http://www.twistedmatrix.com
+	or 'apt-get install python-twisted'
+
+* For OggTheora support, you need ffmpeg2theora and Cortado applet
+
+

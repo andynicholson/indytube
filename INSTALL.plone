@@ -1,0 +1,66 @@
+0. Setup indytube.conf - see README and INSTALL
+   Its helpful to know where the log files are being written so you can watch them , as you run and configure indytube
+
+1. Setup the configuration file indytube.conf so that it searches Plone's external storage file path
+This is controlled by VIDEO_FILE_DIRECTORY. It will walk recursively down this directory, and pick up
+every eligble file. Eligble in this case means any file ending with an extension define
+in CONVERT_THESE in the [encoder]
+eg
+[paths]
+VIDEO_FILE_DIRECTORY=/opt/instances/zope-testing/var/files/Members
+FLV_FILE_DIRECTORY=/var/www/flv-files/
+
+# The next section is where you set indytube to find the Cheetah template (the meta-HTML)
+and where to output the files , and what extension they will have.
+
+INCLUDE_FILE_DIRECTORY=/opt/instances/zope-testing/var/files/Members
+INCLUDE_FILE_SUFFIX=.flv.inc
+INCLUDE_TEMPLATE=/opt/indytube/plumi.template
+
+all transcoded video go into a web-accessible area, eg FLV_FILE_DIRECTORY
+
+2. Setup apache2 to serve these .flv files, from FLV_FILE_DIRECTORY
+
+Possible virtual host stanza for apache2
+NameVirtualHost 66.135.41.120:80
+<VirtualHost 66.135.41.120:80>
+ServerName flv.engagemedia.org
+ServerAdmin webdev@engagemedia.org
+DocumentRoot /var/www/flv-files
+DirectoryIndex index.html index.htm index.shtml index.cgi index.php
+ErrorLog /var/log/apache2/flv-files-error.log
+LogLevel warn
+CustomLog /var/log/apache2/flv-files-access.log combined
+</VirtualHost>
+
+3. Make sure the template is referencing the correct URL paths to get the files, flowplayer, cortado applet etc
+Again, this is controlled by the indytube.conf file
+
+eg
+[urls]
+FLOWPLAYER_LOCATION=http://testing.engagemedia.org/flowplayer/FlowPlayer.swf
+VIDEO_SERVER_URL=http://flv.engagemedia.org/
+SPLASH_IMAGE_BASE=http://testing.engagemedia.org/flowplayer/
+SPLASH_IMAGE_FILE=Play_v2_trans.png
+
+So, you need to copy FlowPlayer.swf (or whatever filename you use) to FLOWPLAYER_LOCATION
+note , you can use different virtual host names if you like. So you can serve the flowplayer swf from
+one app server, and use another as the reference for downloading/streaming videos (VIDEO_SERVER_URL)
+(or not. you can just use apache2 for both)
+
+The is image referenced in SPLASH_IMAGE_FILE should be copied to the virtual host referenced by VIDEO_SERVER_URL
+
+Note: SPLASH_IMAGE_FILE is actually loaded from the web relative to VIDEO_SERVER_URL , not SPLASH_IMAGE_BASE
+This needs correcting in the source, flowplayer changed since the confg var names was initially choosen
+
+
+4. Fullscreen mode in flowplayer.
+  Install fullscreen.js/html and swfobject.js into the VIDEO_SERVER_URL virtual host
+  Configure fullscreen.js to use the correct virtual host url to open fullscreen.html 
+  Configure fullscreen.html to be the html you want to display when the user watches the movie in "fullscreen" mode
+
+eg to do steps 3 and 4 you might
+$ sudo cp fullscreen.js fullscreen.html swfobject.js ~/src/flowplayer/FlowPlayer.swf /var/www/flv-files/
+
+--
+andy@engagemedia.org

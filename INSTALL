@@ -1,0 +1,59 @@
+The basic idea
+-------------
+
+Indytube tries to encode media files into flv and ogg theora codec files.
+If successful, a snippet of html is produced, when included inside a typical CMS templating system, will include a browser widget for the appropriate media player (a FLV plugin or OGG plugin)
+
+So, you need to configure indytube to see your incoming video files directory, and where to put encoded media.
+You will also need to configure the virtual hosts that serve you media.  
+For this you will need a streaming (icecast2, red5) or a web server will do (apache2)
+
+see README for more details about the required third party software.
+
+Read INSTALL.plone for a plone / apache2 setup
+Read INSTALL.red5 for a very basic configuration for red5 streaming server.
+
+How do I set it up?
+-------------------
+
+First, you need to open up indytube.conf to change the config variables
+to something sensible.  Here you need to set the paths for your 
+orginal and encoded files, plus urls for the resources like the 
+flowplayer files and your splash screen image
+(an EngageMedia.org and Indymedia one is included here if you need one).  You
+can also tweak the encoder options(sensible defaults are included for
+small video files and quick encoding with decent quality) and turn off
+encoding altogether.  There's logging settings for debugging, and a
+way to specify the maximum number of encoders you'd like to run in
+parallel, and at what priority.
+
+You also might want to customize the plumi.template, or template.include.cortado,
+which is used to generate a fragment to be included in any page with video.  The
+basic idea is that the cms template is tweaked to pull in this
+template, which does nothing if it isn't there, 
+
+Then, just run indytube , using run_indytube.sh. Internally, indytube is using
+Twisted reactor to schedule itself to run periodically.
+
+If the maximum numbers of encoders are already running, it just
+stops. Otherwise, it will check for video files in the directory
+you've specified, see if they've already been encoded, or if another
+encoder is already handling them, and if not, generate the flv file
+and the include file.  And then you've got streaming embedded video.
+ 
+Running indytube
+----------------
+Remember to have your permissions set correctly for the user you will start indytube as for the directories inside the Plone instance.
+
+You can debug problems by watching the log files generated, check the [urls] section of the indytube.conf
+
+
+invoke as
+$python indytube.py
+to see cmd line messages
+
+or to run as a background process
+$./run_indytube.sh
+
+watch for the logs and lock files , in the directories configured in indytube.conf
+You may have stale lock file left around from indytube crashes.

@@ -1,0 +1,9 @@
+<object type="application/x-shockwave-flash" data="$flowplayer_location" width="320" height="263" id="FlowPlayer">
+<param name="allowScriptAccess" value="always" />
+<param name="movie" value="$flowplayer_location" />
+<param name="quality" value="high" />
+<param name="scale" value="noScale" />
+<param name="wmode" value="transparent" />
+<param name="allowFullScreen" value="true"></param>
+<param name="flashvars" value="config={playList:[{url:'$splashbaseurl/$splashfile/thumbnailImage_large',type:'jpg',overlayId:'play'},{url:'$videobaseurl/$videofile'}],  autoPlay: false , autoBuffering: false, loop:false, fullScreenScriptURL: '$videobaseurl/fullscreen.js' } " />
+</object>

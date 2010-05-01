@@ -1,0 +1,9 @@
+0. download red5 .deb package , install with dpkg
+
+1. copy red5-webapp directory to the webapps directory of red5 server
+
+2. configure webapps/YourAppName/WEB-INF/red5-web.properties to point to your directory of FLV videos
+
+3. Use urls like rtmp://server.name:1935/webappContextPath/path/to/video.flv
+
+For setup of red5 web app , check out the configuration files inside red5-webapp/WEB-INF/
