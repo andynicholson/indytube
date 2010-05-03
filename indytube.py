@@ -223,8 +223,6 @@ class IndyTubeTranscoder(object):
                     				logging.info("Error while processing %s: %s" % (videofile,traceback.format_exc()))
 						try:
                     					os.remove(lockfile)
-		    					#remove this process's lockfile, this exception will stop the entire process
-		    					os.remove(self.ENCODER_LOCKFILE)
 						except:
 							pass
 
