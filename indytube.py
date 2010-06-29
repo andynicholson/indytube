@@ -1,5 +1,24 @@
 #!/usr/bin/python2.5
 
+#indytube
+# Copyright John Duda, 2006
+# Copyright Andy Nicholson, 2007 - 2010
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published
+# by the Free Software Foundation; either version 2 of the License,
+#  or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+	
+
 import ConfigParser
 import os
 import logging
@@ -118,8 +137,9 @@ class IndyTubeTranscoder(object):
             			includefile  = os.path.join(self.INCLUDE_FILE_DIRECTORY,relative_directory,incstem+self.INCLUDE_FILE_SUFFIX)
 	    			#logging.info("check for %s, %s, %s " % (lockfile, skipfile, flvfile))
 
-				#check that another encoder isnt already processing this file (lockfile) or that we havent tried and failed before (skipfile)
-            			if not(os.path.exists(lockfile) or os.path.exists(skipfile)):
+				#check that another encoder isnt already processing this file (lockfile) or that we havent tried and failed before (skipfile) or
+				# video file size isnt zero
+            			if not(os.path.exists(lockfile) or os.path.exists(skipfile) or os.path.getsize(videofile)<=0):
 	        			#OK, valid video file ready to try to transcode
                 			logging.debug("Checking file %s, using extension %s " % ( os.path.join(root,f), extension))
                 			try:
@@ -284,21 +304,3 @@ def main():
 # this only runs if the module was *not* imported
 if __name__ == '__main__':
     main()
-
-# Copyright John Duda, 2006
-# Copyright Andy Nicholson, 2007 - 2010
-
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published
-# by the Free Software Foundation; either version 2 of the License,
-#  or (at your option) any later version.
-
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-					 
