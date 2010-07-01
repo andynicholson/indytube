@@ -164,7 +164,7 @@ class IndyTubeTranscoder(object):
 							#pipe_to_null = '> /dev/null 2>&1'
                         				if self.DO_ENCODING: #maybe we just want to regenerate the include file!
 								#mencoder flv conversion
-								if not(os.path.exists(flvfile)):
+								if not(os.path.exists(flvfile)) or not(os.path.exists(includefile)):
                         						logging.info('OK to try encoding into FLV: '+videofile)
 									start_time=time.time()
 									encoder_command = self.MENCODER_LOCATION + " -quiet " + videofile + " -o " + flvfile + " " + self.MENCODER_OPTIONS
@@ -184,7 +184,7 @@ class IndyTubeTranscoder(object):
 									logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,theora_cmd))
 
 								#ffmpeg conversion to MP4 for IPhone
-								if not(os.path.exists(mp4file)):
+								if not(os.path.exists(mp4file)) or not(os.path.exists(includefile)):
 									logging.info('OK to try encoding into MP4: '+videofile)
 									start_time=time.time()	
 									#ffmpeg_mp4_cmd = self.FFMPEG_LOCATION + ' -i ' + videofile + ' ' + self.FFMPEG_IPHONE_OPTIONS + ' ' + mp4file
@@ -196,7 +196,7 @@ class IndyTubeTranscoder(object):
 									logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,ffmpeg_mp4_cmd))
 
 								#ffmpeg conversion to 3GP for other mobiles
-								if not(os.path.exists(threegpfile)):
+								if not(os.path.exists(threegpfile)) or not(os.path.exists(includefile)):
 									logging.info('OK to try encoding into 3GP: '+videofile)	
 									start_time=time.time()	
 									ffmpeg_3gp_cmd = self.FFMPEG_LOCATION + ' -i ' + videofile + ' ' + self.FFMPEG_3GP_OPTIONS + ' ' + threegpfile
