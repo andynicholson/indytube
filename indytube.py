@@ -190,7 +190,7 @@ class IndyTubeTranscoder(object):
 									#ffmpeg_mp4_cmd = self.FFMPEG_LOCATION + ' -i ' + videofile + ' ' + self.FFMPEG_IPHONE_OPTIONS + ' ' + mp4file
 									#outputdir is the user's clips directory - ie basedir of mp4file
 									output_dir = os.path.dirname(mp4file)
-									ffmpeg_mp4_cmd = 'HandBrakeCLI -i %s -o %s --preset="iPhone & iPod Touch"' % (videofile, mp4file)
+									ffmpeg_mp4_cmd = 'HandBrakeCLI -i %s -o %s --optimize --preset="iPhone & iPod Touch"' % (videofile, mp4file)
 									os.system('nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_mp4_cmd)
 									finish_time=time.time()
 									logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,ffmpeg_mp4_cmd))
