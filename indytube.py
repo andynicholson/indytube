@@ -129,6 +129,8 @@ class IndyTubeTranscoder(object):
             			skipfile = os.path.join(root,incstem+".wetube_skip")  # we tried and failed, don't bother again
 				old_flvfile = os.path.join(self.FLV_FILE_DIRECTORY,relative_directory,stem+".flv")
             			flvfile  = os.path.join(self.FLV_FILE_DIRECTORY,relative_directory,incstem+".flv")
+				#WE NEED TO STRIP '#' out of file names for FLV files
+				flvfile = flvfile.replace('#','')
 	    			theorafile = os.path.join(self.FLV_FILE_DIRECTORY,relative_directory,incstem+".ogg")
 				mp4file = os.path.join(self.FLV_FILE_DIRECTORY,relative_directory,incstem+".mp4")
 				threegpfile = os.path.join(self.FLV_FILE_DIRECTORY,relative_directory,incstem+".3gp") 
