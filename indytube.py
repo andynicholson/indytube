@@ -170,18 +170,18 @@ class IndyTubeTranscoder(object):
 								if not(os.path.exists(flvfile)) or not(os.path.exists(includefile)):
                         						logging.info('OK to try encoding into FLV: '+videofile)
 									start_time=time.time()
-									encoder_command = self.MENCODER_LOCATION + " -quiet " + videofile + " -o " + flvfile + " " + self.MENCODER_OPTIONS
+									encoder_command = self.MENCODER_LOCATION + " -quiet \"" + videofile + "\" -o \"" + flvfile + "\" " + self.MENCODER_OPTIONS
 									os.system('nice -n '+self.BE_HOW_NICE+' '+encoder_command)
 									finish_time=time.time()
 									logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,encoder_command))
-									flvtool_command = self.FLVTOOL_LOCATION+" -U stdin "+flvfile
+									flvtool_command = self.FLVTOOL_LOCATION+" -U stdin \""+flvfile + '\"'
 									os.system("cat "+ flvfile +" | "+ 'nice -n '+ self.BE_HOW_NICE+' '+flvtool_command) 
 
 			    					#ffmpeg2theora , theora/ogg conversion -- TURNED OFF!!
 								if not(os.path.exists(theorafile)) and False:
 									logging.info('OK to try encoding into OGG: '+videofile)
 									start_time=time.time()	
-									theora_cmd =  self.FFMPEG2THEORA_COMMAND + ' ' + videofile + " -o " + theorafile
+									theora_cmd =  self.FFMPEG2THEORA_COMMAND + ' \"' + videofile + "\" -o \"" + theorafile + '\"'
 									os.system('nice -n '+ self.BE_HOW_NICE+' '+ theora_cmd)
 									finish_time=time.time()
 									logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,theora_cmd))
@@ -193,7 +193,7 @@ class IndyTubeTranscoder(object):
 									#ffmpeg_mp4_cmd = self.FFMPEG_LOCATION + ' -i ' + videofile + ' ' + self.FFMPEG_IPHONE_OPTIONS + ' ' + mp4file
 									#outputdir is the user's clips directory - ie basedir of mp4file
 									output_dir = os.path.dirname(mp4file)
-									ffmpeg_mp4_cmd = 'HandBrakeCLI -i %s -o %s --optimize --preset="iPhone & iPod Touch"' % (videofile, mp4file)
+									ffmpeg_mp4_cmd = 'HandBrakeCLI -i \"%s\" -o\"%s\" --optimize --preset="iPhone & iPod Touch"' % (videofile, mp4file)
 									os.system('nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_mp4_cmd)
 									finish_time=time.time()
 									logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,ffmpeg_mp4_cmd))
@@ -202,7 +202,7 @@ class IndyTubeTranscoder(object):
 								if not(os.path.exists(threegpfile)) or not(os.path.exists(includefile)):
 									logging.info('OK to try encoding into 3GP: '+videofile)	
 									start_time=time.time()	
-									ffmpeg_3gp_cmd = self.FFMPEG_LOCATION + ' -i ' + videofile + ' ' + self.FFMPEG_3GP_OPTIONS + ' ' + threegpfile
+									ffmpeg_3gp_cmd = self.FFMPEG_LOCATION + ' -i \"' + videofile + '\" ' + self.FFMPEG_3GP_OPTIONS + ' \"' + threegpfile + '\"'
 									os.system('nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_3gp_cmd)
 									finish_time=time.time()
 									logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,ffmpeg_3gp_cmd))
