@@ -213,11 +213,11 @@ class IndyTubeTranscoder(object):
                                                                 if not(os.path.exists(newmp4file)) or not(os.path.exists(includefile)):
                                                                         logging.info('OK to try encoding into new mp4 file: '+videofile)
                                                                         start_time=time.time()
-                                                                        ffmpeg_newmp4_cmd = self.FFMPEG_LOCATION + ' -i ' + videofile + ' ' + self.FFMPEG_H264_OPTIONS + ' ' + newmp4file+".tmp"
+                                                                        ffmpeg_newmp4_cmd = self.FFMPEG_LOCATION + ' -i \"' + videofile + '\" ' + self.FFMPEG_H264_OPTIONS + ' \"' + newmp4file+'.tmp\"'
                                                                         os.system('nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_newmp4_cmd)
 									#fast start
-									os.system('nice -n ' + self.BE_HOW_NICE+ ' qt-faststart ' + newmp4file + '.tmp ' + newmp4file)
-									os.system("rm " + newmp4file + ".tmp")
+									os.system('nice -n ' + self.BE_HOW_NICE+ ' qt-faststart \"' + newmp4file + '.tmp\" \"' + newmp4file+'\"')
+									os.system("rm \"" + newmp4file + ".tmp\"")
                                                                         finish_time=time.time()
                                                                         logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,ffmpeg_newmp4_cmd))
 
