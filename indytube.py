@@ -92,7 +92,7 @@ class IndyTubeTranscoder(object):
 		self.ENCODER_LOCKFILE="%s.%s" % (self.ENCODER_LOCKFILE_BASE,n)
 		if os.path.exists(self.ENCODER_LOCKFILE):	
 			if n==(self.NUMBER_OF_PARALLEL_ENCODERS-1):
-				logging.info("Max encoders reached(%s), exiting." % self.NUMBER_OF_PARALLEL_ENCODERS)
+				logging.error("Max encoders reached(%s), exiting." % self.NUMBER_OF_PARALLEL_ENCODERS)
 				#we should exit the program here
 				#sys.exit("Max encoders reached(%s), exiting." % self.NUMBER_OF_PARALLEL_ENCODERS)
 				return False
@@ -137,6 +137,7 @@ class IndyTubeTranscoder(object):
 				mp4file = os.path.join(self.FLV_FILE_DIRECTORY,relative_directory,incstem+".mp4")
 				threegpfile = os.path.join(self.FLV_FILE_DIRECTORY,relative_directory,incstem+".3gp")
                                 newmp4file = os.path.join(self.FLV_FILE_DIRECTORY,relative_directory,incstem+".h264")
+				newmp4file = newmp4file.replace('#','')
 
 				#use our special 'incstem', which includes our unique hash
             			includefile  = os.path.join(self.INCLUDE_FILE_DIRECTORY,relative_directory,incstem+self.INCLUDE_FILE_SUFFIX)
@@ -151,7 +152,7 @@ class IndyTubeTranscoder(object):
 						try:
                     					os.mknod(lockfile)                # touch the lock file
 						except:
-							logging.info("lock file creation failed! ABORTING. %s " % lockfile)
+							logging.error("lock file creation failed! ABORTING. %s " % lockfile)
 
 							return False
 
@@ -232,7 +233,7 @@ class IndyTubeTranscoder(object):
 			    					logging.debug("skipped encoding, will just do html template generation, if flv exists as non-zero size")
                     
                     				else:
-							logging.debug("flv file and html file already exists, not doing transcoding")
+							logging.debug("transcoded files and html file already exists, not doing transcoding")
 							untouched += 1
 
 		    				#make the flash HTML snippet if the flv got created correctly.
@@ -263,12 +264,17 @@ class IndyTubeTranscoder(object):
                     				else:
                         				logging.info("FLV file size is zero - assuming encoding failed! Permanently skipping file!")
                         				os.mknod(skipfile)
+
+						#XXX Another skipfile check
+						# XXX Check if H264 exists also, if not make a skipfile
+						# XXX Actually check should be if we timeout'd or not!
+						
                        
 		    				#finished transcoding block , remove lock file 
                     				os.remove(lockfile)
 
                 			except:
-                    				logging.info("Error while processing %s: %s" % (videofile,traceback.format_exc()))
+                    				logging.error("Error while processing %s: %s" % (videofile,traceback.format_exc()))
 						try:
                     					os.remove(lockfile)
 						except:
