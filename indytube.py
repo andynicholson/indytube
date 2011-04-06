@@ -174,7 +174,7 @@ class IndyTubeTranscoder(object):
                         						logging.info('OK to try encoding into FLV: '+videofile)
 									start_time=time.time()
 									encoder_command = self.MENCODER_LOCATION + " -quiet \"" + videofile + "\" -o \"" + flvfile + "\" " + self.MENCODER_OPTIONS
-									os.system('nice -n '+self.BE_HOW_NICE+' '+encoder_command)
+									os.system('timeout -k 2m 15m nice -n '+self.BE_HOW_NICE+' '+encoder_command)
 									finish_time=time.time()
 									logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,encoder_command))
 									flvtool_command = self.FLVTOOL_LOCATION+" -U stdin \""+flvfile + '\"'
@@ -185,7 +185,7 @@ class IndyTubeTranscoder(object):
 									logging.info('OK to try encoding into OGG: '+videofile)
 									start_time=time.time()	
 									theora_cmd =  self.FFMPEG2THEORA_COMMAND + ' \"' + videofile + "\" -o \"" + theorafile + '\"'
-									os.system('nice -n '+ self.BE_HOW_NICE+' '+ theora_cmd)
+									os.system('timeout -k 2m 15m nice -n '+ self.BE_HOW_NICE+' '+ theora_cmd)
 									finish_time=time.time()
 									logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,theora_cmd))
 
@@ -197,7 +197,7 @@ class IndyTubeTranscoder(object):
 									#outputdir is the user's clips directory - ie basedir of mp4file
 									output_dir = os.path.dirname(mp4file)
 									ffmpeg_mp4_cmd = 'HandBrakeCLI -i \"%s\" -o\"%s\" --optimize --preset="iPhone & iPod Touch"' % (videofile, mp4file)
-									os.system('nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_mp4_cmd)
+									os.system('timeout -k 2m 15m nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_mp4_cmd)
 									finish_time=time.time()
 									logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,ffmpeg_mp4_cmd))
 
@@ -206,7 +206,7 @@ class IndyTubeTranscoder(object):
 									logging.info('OK to try encoding into 3GP: '+videofile)	
 									start_time=time.time()	
 									ffmpeg_3gp_cmd = self.FFMPEG_LOCATION + ' -i \"' + videofile + '\" ' + self.FFMPEG_3GP_OPTIONS + ' \"' + threegpfile + '\"'
-									os.system('nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_3gp_cmd)
+									os.system('timeout -k 2m 15m nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_3gp_cmd)
 									finish_time=time.time()
 									logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,ffmpeg_3gp_cmd))
 
@@ -215,9 +215,9 @@ class IndyTubeTranscoder(object):
                                                                         logging.info('OK to try encoding into new mp4 file: '+videofile)
                                                                         start_time=time.time()
                                                                         ffmpeg_newmp4_cmd = self.FFMPEG_LOCATION + ' -i \"' + videofile + '\" ' + self.FFMPEG_H264_OPTIONS + ' \"' + newmp4file+'.tmp\"'
-                                                                        os.system('nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_newmp4_cmd)
+                                                                        os.system('timeout -k 2m 15m nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_newmp4_cmd)
 									#fast start
-									os.system('nice -n ' + self.BE_HOW_NICE+ ' qt-faststart \"' + newmp4file + '.tmp\" \"' + newmp4file+'\"')
+									os.system('timeout -k 2m 15m nice -n ' + self.BE_HOW_NICE+ ' qt-faststart \"' + newmp4file + '.tmp\" \"' + newmp4file+'\"')
 									os.system("rm \"" + newmp4file + ".tmp\"")
                                                                         finish_time=time.time()
                                                                         logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,ffmpeg_newmp4_cmd))
@@ -265,11 +265,13 @@ class IndyTubeTranscoder(object):
                         				logging.info("FLV file size is zero - assuming encoding failed! Permanently skipping file!")
                         				os.mknod(skipfile)
 
-						#XXX Another skipfile check
-						# XXX Check if H264 exists also, if not make a skipfile
-						# XXX Actually check should be if we timeout'd or not!
-						
-                       
+						#Another skipfile check for H264 file, which should exist and be larger than 48 bytes.
+						if not (os.path.exists(newmp4file) and os.path.getsize(newmp4file)>48):
+							logging.info("H264 file missing or < 48 bytes - assuming encoding failed! Permanently skipping file!")
+                                                        os.mknod(skipfile)
+
+
+						#
 		    				#finished transcoding block , remove lock file 
                     				os.remove(lockfile)
 
