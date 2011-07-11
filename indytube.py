@@ -136,7 +136,7 @@ class IndyTubeTranscoder(object):
 	    			theorafile = os.path.join(self.FLV_FILE_DIRECTORY,relative_directory,incstem+".ogg")
 				mp4file = os.path.join(self.FLV_FILE_DIRECTORY,relative_directory,incstem+".mp4")
 				threegpfile = os.path.join(self.FLV_FILE_DIRECTORY,relative_directory,incstem+".3gp")
-                                newmp4file = os.path.join(self.FLV_FILE_DIRECTORY,relative_directory,incstem+".h264")
+                                newmp4file = os.path.join(self.FLV_FILE_DIRECTORY,relative_directory,incstem+"-h264.mp4")
 				newmp4file = newmp4file.replace('#','')
 
 				#use our special 'incstem', which includes our unique hash
