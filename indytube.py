@@ -286,10 +286,7 @@ class IndyTubeTranscoder(object):
 					logging.debug(' lock file or skip file present for file %s ' % videofile)
 					skipped += 1
 
-	#remove this process's lockfile, we have finished the loop
-  	os.remove(self.ENCODER_LOCKFILE)
-  	logging.info("Ending indytube... We checked %s eligble files, converted %s files, not transcoded %s files, skipped %s files " % (checked, converted,untouched, skipped))
-
+	logging.info("Ending indytube... We checked %s eligble files, converted %s files, not transcoded %s files, skipped %s files " % (checked, converted,untouched, skipped))
 	## end : do_transcoding_loop
 
 def main():
@@ -301,6 +298,8 @@ def main():
     	if indytuber.check_lock_file():
     		#do transcoding
 		indytuber.do_transcoding_loop()
+		#remove this process's lockfile, we have finished the loop
+		os.remove(indytuber.ENCODER_LOCKFILE)
 
 	#recursive, time-delayed callback
         #periodically run this function ,to keep looping
