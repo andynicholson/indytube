@@ -171,7 +171,7 @@ class IndyTubeTranscoder(object):
                         				if self.DO_ENCODING: #maybe we just want to regenerate the include file!
 								#mencoder flv conversion
 								if not(os.path.exists(flvfile)) or not(os.path.exists(includefile)):
-                        						logging.info('OK to try encoding into FLV: '+videofile)
+                        						logging.debug('OK to try encoding into FLV: '+videofile)
 									start_time=time.time()
 									encoder_command = self.MENCODER_LOCATION + " -quiet \"" + videofile + "\" -o \"" + flvfile + "\" " + self.MENCODER_OPTIONS
 									os.system('timeout -k 2m 15m nice -n '+self.BE_HOW_NICE+' '+encoder_command)
@@ -182,7 +182,7 @@ class IndyTubeTranscoder(object):
 
 			    					#ffmpeg2theora , theora/ogg conversion -- TURNED OFF!!
 								if not(os.path.exists(theorafile)) and False:
-									logging.info('OK to try encoding into OGG: '+videofile)
+									logging.debug('OK to try encoding into OGG: '+videofile)
 									start_time=time.time()	
 									theora_cmd =  self.FFMPEG2THEORA_COMMAND + ' \"' + videofile + "\" -o \"" + theorafile + '\"'
 									os.system('timeout -k 2m 15m nice -n '+ self.BE_HOW_NICE+' '+ theora_cmd)
@@ -191,7 +191,7 @@ class IndyTubeTranscoder(object):
 
 								#ffmpeg conversion to MP4 for IPhone
 								if not(os.path.exists(mp4file)) or not(os.path.exists(includefile)):
-									logging.info('OK to try encoding into MP4: '+videofile)
+									logging.debug('OK to try encoding into MP4: '+videofile)
 									start_time=time.time()	
 									#ffmpeg_mp4_cmd = self.FFMPEG_LOCATION + ' -i ' + videofile + ' ' + self.FFMPEG_IPHONE_OPTIONS + ' ' + mp4file
 									#outputdir is the user's clips directory - ie basedir of mp4file
@@ -203,7 +203,7 @@ class IndyTubeTranscoder(object):
 
 								#ffmpeg conversion to 3GP for other mobiles
 								if not(os.path.exists(threegpfile)) or not(os.path.exists(includefile)):
-									logging.info('OK to try encoding into 3GP: '+videofile)	
+									logging.debug('OK to try encoding into 3GP: '+videofile)	
 									start_time=time.time()	
 									ffmpeg_3gp_cmd = self.FFMPEG_LOCATION + ' -i \"' + videofile + '\" ' + self.FFMPEG_3GP_OPTIONS + ' \"' + threegpfile + '\"'
 									os.system('timeout -k 2m 15m nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_3gp_cmd)
@@ -212,7 +212,7 @@ class IndyTubeTranscoder(object):
 
 							        #ffmpeg conversion to new mp4 file ie h264 via ffmpeg
                                                                 if not(os.path.exists(newmp4file)) or not(os.path.exists(includefile)):
-                                                                        logging.info('OK to try encoding into new mp4 file: '+videofile)
+                                                                        logging.debug('OK to try encoding into new mp4 file: '+videofile)
                                                                         start_time=time.time()
                                                                         ffmpeg_newmp4_cmd = self.FFMPEG_LOCATION + ' -i \"' + videofile + '\" ' + self.FFMPEG_H264_OPTIONS + ' \"' + newmp4file+'.tmp\"'
                                                                         os.system('timeout -k 2m 15m nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_newmp4_cmd)
@@ -239,7 +239,7 @@ class IndyTubeTranscoder(object):
 		    				#make the flash HTML snippet if the flv got created correctly.
 		    				#XXX todo, separate out the flv and ogg theora (java applet) html snippet
                     				if os.path.exists(flvfile) and os.path.getsize(flvfile)>0:
-                        				logging.info("Making html template - original size of %s: %.1fMB, Encoded size: %.1fMB" % (videofile,os.path.getsize(videofile)/1000000.0,os.path.getsize(flvfile)/1000000.0))
+                        				logging.debug("Making html template - original size of %s: %.1fMB, Encoded size: %.1fMB" % (videofile,os.path.getsize(videofile)/1000000.0,os.path.getsize(flvfile)/1000000.0))
 							#lets make sure all the directories are created
                                 			try:
                                     				os.makedirs(os.path.dirname(includefile))
@@ -262,12 +262,12 @@ class IndyTubeTranscoder(object):
                         				f.close()
 
                     				else:
-                        				logging.info("FLV file size is zero - assuming encoding failed! Permanently skipping file!")
+                        				logging.info("FLV file size is zero - assuming encoding failed! Permanently skipping file!\n skipfile %s" % skipfile)
                         				os.mknod(skipfile)
 
 						#Another skipfile check for H264 file, which should exist and be larger than 48 bytes.
 						if not (os.path.exists(newmp4file) and os.path.getsize(newmp4file)>48):
-							logging.info("H264 file missing or < 48 bytes - assuming encoding failed! Permanently skipping file!")
+							logging.info("H264 file missing or < 48 bytes - assuming encoding failed! Permanently skipping file!\n skipfile %s" % skipfile)
                                                         os.mknod(skipfile)
 
 
@@ -283,29 +283,38 @@ class IndyTubeTranscoder(object):
 							pass
 
 	   			else:
-					logging.debug(' lock file or skip file present for file %s ' % videofile)
+					logging.debug(' lock file or skip file, or video file size zero : for file %s ' % videofile)
 					skipped += 1
 
 	logging.info("Ending indytube... We checked %s eligble files, converted %s files, not transcoded %s files, skipped %s files " % (checked, converted,untouched, skipped))
 	## end : do_transcoding_loop
 
-def main():
 
-    def looperInvoker(indytuber):
-    	"""recursively invoked callback, to check invoking do_transcoding_loop"""
-	logging.debug("started looperInvoker function at %s, calling loop every %s seconds " % (time.strftime("%D %H:%M:%S"), indytuber.POLLTIME))
-	#check for others
-    	if indytuber.check_lock_file():
-    		#do transcoding
+def looperInvoker(indytuber):
+    """recursively invoked callback, to check invoking do_transcoding_loop"""
+    logging.debug("started looperInvoker function at %s, calling loop every %s seconds " % (time.strftime("%D %H:%M:%S"), indytuber.POLLTIME))
+    try:
+	#check for others, this creates the ENCODER_LOCKFILE, if we should go ahread and run do_transcoding_loop
+	if indytuber.check_lock_file():
+		#do transcoding
 		indytuber.do_transcoding_loop()
-		#remove this process's lockfile, we have finished the loop
-		os.remove(indytuber.ENCODER_LOCKFILE)
+    except:
+	logging.error("Error while in looperInvoker: %s" % (traceback.format_exc()))
 
-	#recursive, time-delayed callback
-        #periodically run this function ,to keep looping
-	# passing along the indytube object as an argument. (try not to _call_ this function or else you'll end up in infinite recursion!)
-        reactor.callLater(indytuber.POLLTIME,looperInvoker,indytuber)
+    #remove this process's lockfile, we have finished the loop
+    try:
+	os.remove(indytuber.ENCODER_LOCKFILE)
+    except:
+	pass
 
+    #recursive, time-delayed callback
+    #periodically run this function ,to keep looping
+    # passing along the indytube object as an argument. (try not to _call_ this function or else you'll end up in infinite recursion!)
+    reactor.callLater(indytuber.POLLTIME,looperInvoker,indytuber)
+
+    #END loopInvoker
+
+def main():
     #make an IndyTubeTranscoder object
     indytuber = IndyTubeTranscoder()
     #parse our config
