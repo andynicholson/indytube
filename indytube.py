@@ -167,6 +167,10 @@ class IndyTubeTranscoder(object):
                                     				#the dirs may already exist
                                     				pass
 							
+							#	
+							#Timeout command to monitor transcoding.
+							#	
+							timeout_cmd = 'timeout -k 2m 35m'	
 							#pipe_to_null = '> /dev/null 2>&1'
                         				if self.DO_ENCODING: #maybe we just want to regenerate the include file!
 								#mencoder flv conversion
@@ -174,7 +178,7 @@ class IndyTubeTranscoder(object):
                         						logging.debug('OK to try encoding into FLV: '+videofile)
 									start_time=time.time()
 									encoder_command = self.MENCODER_LOCATION + " -quiet \"" + videofile + "\" -o \"" + flvfile + "\" " + self.MENCODER_OPTIONS
-									os.system('timeout -k 2m 15m nice -n '+self.BE_HOW_NICE+' '+encoder_command)
+									os.system(timeout_cmd + ' nice -n '+self.BE_HOW_NICE+' '+encoder_command)
 									finish_time=time.time()
 									logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,encoder_command))
 									flvtool_command = self.FLVTOOL_LOCATION+" -U stdin \""+flvfile + '\"'
@@ -185,7 +189,7 @@ class IndyTubeTranscoder(object):
 									logging.debug('OK to try encoding into OGG: '+videofile)
 									start_time=time.time()	
 									theora_cmd =  self.FFMPEG2THEORA_COMMAND + ' \"' + videofile + "\" -o \"" + theorafile + '\"'
-									os.system('timeout -k 2m 15m nice -n '+ self.BE_HOW_NICE+' '+ theora_cmd)
+									os.system(timeout_cmd + ' nice -n '+ self.BE_HOW_NICE+' '+ theora_cmd)
 									finish_time=time.time()
 									logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,theora_cmd))
 
@@ -197,7 +201,7 @@ class IndyTubeTranscoder(object):
 									#outputdir is the user's clips directory - ie basedir of mp4file
 									output_dir = os.path.dirname(mp4file)
 									ffmpeg_mp4_cmd = 'HandBrakeCLI -i \"%s\" -o\"%s\" --optimize --preset="iPhone & iPod Touch"' % (videofile, mp4file)
-									os.system('timeout -k 2m 15m nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_mp4_cmd)
+									os.system(timeout_cmd + ' nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_mp4_cmd)
 									finish_time=time.time()
 									logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,ffmpeg_mp4_cmd))
 
@@ -206,7 +210,7 @@ class IndyTubeTranscoder(object):
 									logging.debug('OK to try encoding into 3GP: '+videofile)	
 									start_time=time.time()	
 									ffmpeg_3gp_cmd = self.FFMPEG_LOCATION + ' -i \"' + videofile + '\" ' + self.FFMPEG_3GP_OPTIONS + ' \"' + threegpfile + '\"'
-									os.system('timeout -k 2m 15m nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_3gp_cmd)
+									os.system(timeout_cmd + ' nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_3gp_cmd)
 									finish_time=time.time()
 									logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,ffmpeg_3gp_cmd))
 
@@ -215,9 +219,9 @@ class IndyTubeTranscoder(object):
                                                                         logging.debug('OK to try encoding into new mp4 file: '+videofile)
                                                                         start_time=time.time()
                                                                         ffmpeg_newmp4_cmd = self.FFMPEG_LOCATION + ' -i \"' + videofile + '\" ' + self.FFMPEG_H264_OPTIONS + ' \"' + newmp4file+'.tmp\"'
-                                                                        os.system('timeout -k 2m 15m nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_newmp4_cmd)
+                                                                        os.system(timeout_cmd + ' nice -n '+ self.BE_HOW_NICE+' '+ ffmpeg_newmp4_cmd)
 									#fast start
-									os.system('timeout -k 2m 15m nice -n ' + self.BE_HOW_NICE+ ' qt-faststart \"' + newmp4file + '.tmp\" \"' + newmp4file+'\"')
+									os.system(timeout_cmd + ' nice -n ' + self.BE_HOW_NICE+ ' qt-faststart \"' + newmp4file + '.tmp\" \"' + newmp4file+'\"')
 									os.system("rm \"" + newmp4file + ".tmp\"")
                                                                         finish_time=time.time()
                                                                         logging.info("Encoded %s in %.2f seconds, using cmd -- %s" % (videofile,finish_time-start_time,ffmpeg_newmp4_cmd))
