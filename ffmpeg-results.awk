@@ -1,4 +1,9 @@
-/height/ { height=$3}
-/width/ {width=$3}
+BEGIN {
+	FS="="
+}
+/height=/ { height=$2}
+/width=/ {width=$2}
 
-/Duration/ { print width/height }
+END { 
+	print width/height 
+}

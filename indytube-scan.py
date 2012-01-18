@@ -132,7 +132,7 @@ class IndyTubeScanner(object):
 		
 						# Try ffprobe and awk
 						try:
-							aspect_ratio = float(subprocess.Popen(["ffprobe "+self.shellquote(videofile)+" 2>&1 | awk -f ffmpeg-results.awk"],stdout=subprocess.PIPE,shell=True).communicate()[0])
+							aspect_ratio = float(subprocess.Popen(["ffprobe -show_streams "+self.shellquote(videofile)+" 2>&1 | awk -f ffmpeg-results.awk"],stdout=subprocess.PIPE,shell=True).communicate()[0])
 							logging.info("According to ffprobe , Aspect ratio of original is %f for %s" % (aspect_ratio, videofile))
 						except:
 							aspect_ratio = -1
@@ -141,7 +141,7 @@ class IndyTubeScanner(object):
 				else:
 					# Try ffprobe and awk
 					try:
-						aspect_ratio = float(subprocess.Popen(["ffprobe "+self.shellquote(videofile)+" 2>&1 | awk -f ffmpeg-results.awk"],stdout=subprocess.PIPE,shell=True).communicate()[0])
+						aspect_ratio = float(subprocess.Popen(["ffprobe -show_streams "+self.shellquote(videofile)+" 2>&1 | awk -f ffmpeg-results.awk"],stdout=subprocess.PIPE,shell=True).communicate()[0])
 						logging.info("According to ffprobe , Aspect ratio of original is %f for %s" % (aspect_ratio, videofile))
 					except:
 						aspect_ratio = -1
@@ -160,7 +160,7 @@ class IndyTubeScanner(object):
 						logging.warn("Kaa metadata failed on H264 MP4 file %s\n%s" % (newmp4file,traceback.format_exc()))
 						# Try ffprobe and awk
 						try:
-							aspect_ratio_mp4 = subprocess.Popen(["ffprobe "+self.shellquote(newmp4file)+" 2>&1 | awk -f ffmpeg-results.awk"],stdout=subprocess.PIPE).communicate()[0]
+							aspect_ratio_mp4 = subprocess.Popen(["ffprobe -show_streams "+self.shellquote(newmp4file)+" 2>&1 | awk -f ffmpeg-results.awk"],stdout=subprocess.PIPE).communicate()[0]
 							logging.info("According to ffprobe , Aspect ratio of H264 MP4 is %f for %s" % (aspect_ratio_mp4, newmp4file))
 						except:
 							aspect_ratio_mp4 = -1
@@ -170,7 +170,7 @@ class IndyTubeScanner(object):
 				else:
 					# Try ffprobe and awk
 					try:
-						aspect_ratio_mp4 = subprocess.Popen(["ffprobe "+self.shellquote(newmp4file)+" 2>&1 | awk -f ffmpeg-results.awk"],stdout=subprocess.PIPE).communicate()[0]
+						aspect_ratio_mp4 = subprocess.Popen(["ffprobe -show_streams "+self.shellquote(newmp4file)+" 2>&1 | awk -f ffmpeg-results.awk"],stdout=subprocess.PIPE).communicate()[0]
 						logging.info("According to ffprobe , Aspect ratio of H264 MP4 is %f for %s" % (aspect_ratio_mp4, newmp4file))
 					except:
 						aspect_ratio_mp4 = -1
@@ -189,6 +189,9 @@ class IndyTubeScanner(object):
 					else:
 						different = different + 1
 						logging.info('DIFFERENT')
+						
+						#lets get rid of the MP4 file - it will be re-encoded hopefully at the right resolution.
+						os.remove(newmp4file)
 					
 
 	logging.info("Ending indytube scanning... We checked %s eligble files, same %s files, different %s files, error %s files " % (checked, same, different, error))
