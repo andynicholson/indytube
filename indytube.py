@@ -170,7 +170,7 @@ class IndyTubeTranscoder(object):
 							#	
 							#Timeout command to monitor transcoding.
 							#	
-							timeout_cmd = 'timeout -k 2m 35m'	
+							timeout_cmd = 'timeout -k 2m 105m'	
 							#pipe_to_null = '> /dev/null 2>&1'
                         				if self.DO_ENCODING: #maybe we just want to regenerate the include file!
 								#mencoder flv conversion
